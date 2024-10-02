@@ -1,0 +1,1 @@
+# playwright-pnpm-esm-js
