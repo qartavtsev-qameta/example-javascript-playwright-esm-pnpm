@@ -2,7 +2,7 @@
 const { devices, defineConfig } = require("@playwright/test");
 
 module.exports = defineConfig({
-  testDir: "./test",
+  testDir: "./tests",
   reporter: [
     ["list"],
     [
