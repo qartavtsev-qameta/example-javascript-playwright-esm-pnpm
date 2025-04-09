@@ -19,6 +19,19 @@ test('record 5s video of page load + screenshot + trace', async ({ page, context
   // Wait for 5 seconds to simulate "watching the loading process"
   await test.step('Wait for 5 seconds', async () => {
     await page.waitForTimeout(5000);
+      // Get the path to the recorded video for the current test
+  await test.step('Get video path and attach video', async () => {
+    const videoPath = await page.video().path();
+
+    // Read the video file into a buffer
+    const video = fs.readFileSync(videoPath);
+
+    // Attach the video to the Allure report
+    await test.info().attachments.push({
+      name: 'Video (5s)',                  // Name shown in the report
+      contentType: 'video/webm',           // MIME type for webm video
+      body: video,                         // Actual video data
+    });
   });
 
   // Take a screenshot of the current page
@@ -48,19 +61,6 @@ test('record 5s video of page load + screenshot + trace', async ({ page, context
     });
   });
 
-  // Get the path to the recorded video for the current test
-  await test.step('Get video path and attach video', async () => {
-    const videoPath = await page.video().path();
-
-    // Read the video file into a buffer
-    const video = fs.readFileSync(videoPath);
-
-    // Attach the video to the Allure report
-    await test.info().attachments.push({
-      name: 'Video (5s)',                  // Name shown in the report
-      contentType: 'video/webm',           // MIME type for webm video
-      body: video,                         // Actual video data
-    });
   });
 
 });
