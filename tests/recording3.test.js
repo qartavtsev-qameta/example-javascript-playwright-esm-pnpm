@@ -1,6 +1,7 @@
 // Import Playwright's test API
 import { test } from '@playwright/test';
 import fs from 'fs'; // File system module to read files
+import allure from 'allure-playwright'
 
 // Define the test case
 test('record 5s video of page load + screenshot + trace', async ({ page, context }) => {
