@@ -1,6 +1,7 @@
-import { defineConfig, devices } from "@playwright/test";
 
-export default defineConfig({
+const { devices, defineConfig } = require("@playwright/test");
+
+module.exports = defineConfig({
   testDir: "./test",
   reporter: [
     ["list"],
@@ -14,6 +15,11 @@ export default defineConfig({
       },
     ],
   ],
+  use: {
+    screenshot: "only-on-failure", // сохраняет скриншоты при падении
+    video: "on",                    // записывает видео для каждого теста
+    trace: "off",                    // включает трассировки для всех тестов
+  },
   projects: [
     {
       name: "chromium",
