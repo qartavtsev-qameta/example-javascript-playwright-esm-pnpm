@@ -1,5 +1,4 @@
-
-const { devices, defineConfig } = require("@playwright/test");
+import { defineConfig, devices } from '@playwright/test';
 
 module.exports = defineConfig({
   testDir: "./tests",
