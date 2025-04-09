@@ -58,8 +58,11 @@ jobs:
         node-version: '20'
         cache: 'pnpm'
 
+    # Установка pnpm
     - name: Install pnpm
-      run: npm install -g pnpm
+      run: |
+        npm install -g pnpm
+        pnpm --version  # Проверяем версию pnpm, чтобы убедиться, что установка прошла успешно
 
     # Установка зависимостей с pnpm
     - name: Install dependencies
