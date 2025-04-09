@@ -91,5 +91,5 @@ jobs:
 
     # Запуск тестов с Allure TestOps
     - name: Run tests with Allure TestOps
-      run: allurectl watch -- pnpm test
+      run: allurectl watch -- pnpm tests
       continue-on-error: true
