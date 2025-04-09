@@ -1,5 +1,6 @@
 // Import Playwright's test API
 import { test } from '@playwright/test';
+import allure from 'allure-playwright';
 // Import Node.js file system module to read files
 import fs from 'fs';
 
