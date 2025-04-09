@@ -1,10 +1,43 @@
-name: Allure Report
-run-name: ${{ github.actor }} is creating Allure report 🚀
+# Название workflow
+name: testops_playwright_test
+
+# Переменные окружения
+env:
+  ALLURE_ENDPOINT: https://demo.qatools.cloud/
+  ENDPOINT: https://demo.qatools.cloud/
+  ALLURE_PROJECT_ID: 55
+  ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
+  ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
+  ALLURE_RESULTS: "./out/allure-results"
+  BROWSER: ${{ inputs.BROWSER || 'OperaGX' }}
+  OS: ${{ inputs.OS || 'Win_11' }}
+  BRANCH: ${{ github.ref_name }}
 
 on:
   push:
-    branches-ignore:
-      - '!main'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      BROWSER:
+        description: Browser
+        required: false
+        default: "OperaGX"
+      OS:
+        description: OS
+        required: false
+        default: "Win_11"
+      ALLURE_JOB_RUN_ID:
+        description: "ALLURE_JOB_RUN_ID - service parameter (leave blank)"
+        required: false
+        default: ""
+      ALLURE_USERNAME:
+        description: "ALLURE_USERNAME - service parameter (leave blank)"
+        required: false
+        default: ""
 
 permissions: write-all
 
@@ -12,48 +45,48 @@ jobs:
   autotests:
     name: Run tests and generate Allure Report 
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: "Setup pnpm"
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+    # Чекаут репозитория
+    - name: Clone repository
+      uses: actions/checkout@v4.2.2
 
+    # Установка Node.js и pnpm
+    - name: Set up Node 20
+      uses: actions/setup-node@v4.1.0
+      with:
+        node-version: '20'
+        cache: 'pnpm'
 
-      - name: Clone repository
-        uses: actions/checkout@v4.2.2
+    - name: Install pnpm
+      run: npm install -g pnpm
 
-      - name: Set up Node 20
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 20
-          cache: pnpm
+    # Установка зависимостей с pnpm
+    - name: Install dependencies
+      run: pnpm install
 
-      - name: Install pnpm
-        run: pnpm install
+    # Устанавливаем allure-playwright
+    - name: Install allure-playwright
+      run: pnpm add allure-playwright --save-dev
 
-      - run: pnpm test
-        continue-on-error: true
+    # Устанавливаем браузеры для Playwright
+    - name: Install Playwright Browsers
+      run: npx playwright install
 
-      - name: Setup Allure History
-        uses: actions/checkout@v4.2.2
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
+    # Устанавливаем allurectl
+    - name: Install allurectl
+      uses: allure-framework/setup-allurectl@v1
+      with:
+        allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+        allure-token: ${{ env.ALLURE_TOKEN }}
+        allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
 
-      - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.11
-        if: always()
-        with:
-          allure_results: ./out/allure-results
-          allure_history: allure-history
+    # Удаляем старые директории
+    - name: Remove old directories
+      run: |
+        rm -rf allure-results .allure
 
-      - name: Publish Allure Report
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+    # Запуск тестов с Allure TestOps
+    - name: Run tests with Allure TestOps
+      run: allurectl watch -- pnpm test
+      continue-on-error: true
