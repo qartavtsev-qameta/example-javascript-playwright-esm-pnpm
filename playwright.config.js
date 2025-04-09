@@ -1,7 +1,8 @@
+// playwright.config.js
 import { defineConfig, devices } from '@playwright/test';
 
-module.exports = defineConfig({
-  testDir: "./test",
+export default defineConfig({
+  testDir: "./tests",
   reporter: [
     ["list"],
     [
@@ -15,9 +16,9 @@ module.exports = defineConfig({
     ],
   ],
   use: {
-    screenshot: "only-on-failure", // сохраняет скриншоты при падении
-    video: "on",                    // записывает видео для каждого теста
-    trace: "off",                    // включает трассировки для всех тестов
+    screenshot: "only-on-failure",
+    video: "on",
+    trace: "off",
   },
   projects: [
     {
