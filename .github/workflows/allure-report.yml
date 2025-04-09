@@ -48,6 +48,12 @@ jobs:
     
     steps:
     # Чекаут репозитория
+    
+    - name: "Setup pnpm"
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    
     - name: Clone repository
       uses: actions/checkout@v4.2.2
 
@@ -55,14 +61,8 @@ jobs:
     - name: Set up Node 20
       uses: actions/setup-node@v4.1.0
       with:
-        node-version: '20'
-        cache: 'pnpm'
-
-    # Установка pnpm
-    - name: Install pnpm
-      run: |
-        npm install -g pnpm
-        pnpm --version  # Проверяем версию pnpm, чтобы убедиться, что установка прошла успешно
+        node-version: 20
+        cache: pnpm
 
     # Установка зависимостей с pnpm
     - name: Install dependencies
