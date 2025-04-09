@@ -1,10 +1,11 @@
 // Import Playwright's test API
 import { test } from '@playwright/test';
 import fs from 'fs'; // File system module to read files
-import allure from 'allure-playwright'
+//import allure from 'allure-playwright'
+import allure from "allure-js-commons";
 
 // Define the test case
-test('record 5s video of page load + screenshot + trace', async ({ page, context }) => {
+test('rec2', async ({ page, context }) => {
 
   // Start tracing (captures DOM snapshots and screenshots during execution)
   await test.step('Start tracing', async () => {
