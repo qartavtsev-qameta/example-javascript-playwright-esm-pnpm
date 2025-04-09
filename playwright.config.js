@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 module.exports = defineConfig({
-  testDir: "./tests",
+  testDir: "./test",
   reporter: [
     ["list"],
     [
