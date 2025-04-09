@@ -1,14 +1,13 @@
 import { test, expect } from '@playwright/test';
+import fs from 'fs';
 
 test('sample test with extra steps', async ({ page, context }) => {
-  
-  // Начинаем трейсинг до того, как будут выполнены шаги
+  // Старт трейсинга
   await context.tracing.start({ screenshots: true, snapshots: true });
 
-  // Step 1: Просто пример
+  // Step 1: Вложенный шаг с текстовым вложением
   await test.step('step 1', async () => {
     await test.step('step 1.2', async () => {
-      // Добавление текстового вложения
       await test.info().attachments.push({
         name: 'text attachment',
         contentType: 'text/plain',
@@ -17,14 +16,13 @@ test('sample test with extra steps', async ({ page, context }) => {
     });
   });
 
-  // Step 2: Просто пустой шаг
+  // Step 2: Пустой шаг
   await test.step('step 2', async () => {});
 
   // Step 3: Скриншот
   await test.step('step 3 - attach screenshot', async () => {
     await page.goto('https://demo.testops.cloud');
     const screenshot = await page.screenshot();
-    // Добавление скриншота как вложения
     await test.info().attachments.push({
       name: 'Screenshot',
       contentType: 'image/png',
@@ -34,11 +32,8 @@ test('sample test with extra steps', async ({ page, context }) => {
 
   // Step 4: Видео
   await test.step('step 4 - attach video', async () => {
-    // Важно: видео должно быть включено в конфиге
     const videoPath = await page.video().path();
-    const fs = require('fs');
     const video = fs.readFileSync(videoPath);
-    // Добавление видео как вложения
     await test.info().attachments.push({
       name: 'Video',
       contentType: 'video/webm',
@@ -51,9 +46,7 @@ test('sample test with extra steps', async ({ page, context }) => {
     await page.goto('https://example.org');
     await context.tracing.stop({ path: 'trace.zip' });
 
-    const fs = require('fs');
     const traceBuffer = fs.readFileSync('trace.zip');
-    // Добавление trace как вложения
     await test.info().attachments.push({
       name: 'Trace',
       contentType: 'application/zip',
@@ -61,5 +54,5 @@ test('sample test with extra steps', async ({ page, context }) => {
     });
   });
 
-  // После выполнения всех шагов остановим трейсинг
+  // Финал — трейсинг уже остановлен
 });
