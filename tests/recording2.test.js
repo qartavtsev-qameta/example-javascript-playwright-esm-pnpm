@@ -1,0 +1,66 @@
+// Import Playwright's test API
+import { test } from '@playwright/test';
+import allure from 'allure-playwright'; // Allure Playwright plugin
+import fs from 'fs'; // File system module to read files
+
+// Define the test case
+test('record 5s video of page load + screenshot + trace', async ({ page, context }) => {
+  
+  // Start tracing (captures DOM snapshots and screenshots during execution)
+  allure.step('Start tracing', async () => {
+    await context.tracing.start({ screenshots: true, snapshots: true });
+  });
+
+  // Navigate to the target page
+  allure.step('Navigate to the target page', async () => {
+    await page.goto('https://docs.qameta.io/allure-testops/release-notes/');
+  });
+
+  // Wait for 5 seconds to simulate "watching the loading process"
+  allure.step('Wait for 5 seconds', async () => {
+    await page.waitForTimeout(5000);
+  });
+
+  // Take a screenshot of the current page
+  allure.step('Take a screenshot', async () => {
+    const screenshot = await page.screenshot();
+
+    // Attach the screenshot to the Allure report
+    await test.info().attachments.push({
+      name: 'Screenshot after 5s',         // Name shown in the report
+      contentType: 'image/png',            // MIME type
+      body: screenshot,                    // Actual image data
+    });
+  });
+
+  // Stop the tracing and save it to a ZIP file
+  allure.step('Stop tracing and save trace', async () => {
+    await context.tracing.stop({ path: 'trace.zip' });
+
+    // Read the trace ZIP file into a buffer
+    const traceBuffer = fs.readFileSync('trace.zip');
+
+    // Attach the trace file to the Allure report
+    await test.info().attachments.push({
+      name: 'Trace',                       // Name shown in the report
+      contentType: 'application/zip',     // MIME type for ZIP
+      body: traceBuffer,                  // Actual trace data
+    });
+  });
+
+  // Get the path to the recorded video for the current test
+  allure.step('Get video path and attach video', async () => {
+    const videoPath = await page.video().path();
+
+    // Read the video file into a buffer
+    const video = fs.readFileSync(videoPath);
+
+    // Attach the video to the Allure report
+    await test.info().attachments.push({
+      name: 'Video (5s)',                  // Name shown in the report
+      contentType: 'video/webm',           // MIME type for webm video
+      body: video,                         // Actual video data
+    });
+  });
+
+});
