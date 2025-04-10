@@ -1,17 +1,11 @@
-# Название workflow
-name: testops_playwright_test
+name: javascript-playwright-esm-pnpm
 
-# Переменные окружения
 env:
-  ALLURE_ENDPOINT: https://demo.qatools.cloud/
-  ENDPOINT: https://demo.qatools.cloud/
-  ALLURE_PROJECT_ID: 55
+  ALLURE_ENDPOINT: https://demo.testops.cloud/
+  ALLURE_PROJECT_ID: 4195
   ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
   ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
   ALLURE_RESULTS: "./out/allure-results"
-  BROWSER: ${{ inputs.BROWSER || 'OperaGX' }}
-  OS: ${{ inputs.OS || 'Win_11' }}
-  BRANCH: ${{ github.ref_name }}
 
 on:
   push:
@@ -22,14 +16,6 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      BROWSER:
-        description: Browser
-        required: false
-        default: "OperaGX"
-      OS:
-        description: OS
-        required: false
-        default: "Win_11"
       ALLURE_JOB_RUN_ID:
         description: "ALLURE_JOB_RUN_ID - service parameter (leave blank)"
         required: false
@@ -47,7 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # Чекаут репозитория
     
     - name: "Setup pnpm"
       uses: pnpm/action-setup@v2
@@ -57,26 +42,21 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@v4.2.2
 
-    # Установка Node.js и pnpm
     - name: Set up Node 20
       uses: actions/setup-node@v4.1.0
       with:
         node-version: 20
         cache: pnpm
 
-    # Установка зависимостей с pnpm
     - name: Install dependencies
       run: pnpm install
 
-    # Устанавливаем allure-playwright
     - name: Install allure-playwright
       run: pnpm add allure-playwright --save-dev
 
-    # Устанавливаем браузеры для Playwright
     - name: Install Playwright Browsers
       run: npx playwright install
 
-    # Устанавливаем allurectl
     - name: Install allurectl
       uses: allure-framework/setup-allurectl@v1
       with:
@@ -84,12 +64,10 @@ jobs:
         allure-token: ${{ env.ALLURE_TOKEN }}
         allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
 
-    # Удаляем старые директории
     - name: Remove old directories
       run: |
         rm -rf allure-results .allure
 
-    # Запуск тестов с Allure TestOps
     - name: Run tests with Allure TestOps
       run: allurectl watch -- pnpm test
       continue-on-error: true
